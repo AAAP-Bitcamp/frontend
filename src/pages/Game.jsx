@@ -56,29 +56,47 @@ const Game = ({
     userImgs,
     setUserImgs,
     addPoints,
+    setModalText,
+    openModal,
 }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [placement, setPlacement] = React.useState("left");
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState("");
     const submitThing = () => {
         console.log(previewUrl);
+        if (previewUrl.length == 0) {
+            setModalText("Please take a photo!");
+            openModal();
+            return;
+        }
         var newImgs = [...userImgs];
         newImgs = newImgs.concat([previewUrl]);
         addPoints(currentUser["name"]);
         setUserImgs(newImgs);
         console.log(newImgs);
+        setPreviewUrl("");
     };
     return (
         <Flex direction="column">
             <Flex>
                 <PlacementExample />
-                <Flex overflowX="auto">
-                    <Camera setPreviewUrl={setPreviewUrl} />
-                    <Button colorScheme="blue" onClick={submitThing}>
-                        Submit
+                <Flex overflowX="auto" direction="column">
+                    <Camera
+                        imgSize={200}
+                        previewUrl={previewUrl}
+                        setPreviewUrl={setPreviewUrl}
+                        mb={5}
+                    />
+                    <Button
+                        mt={5}
+                        mb={5}
+                        colorScheme="red"
+                        onClick={submitThing}
+                    >
+                        Assassinate!
                     </Button>
                     <Button colorScheme="blue" onClick={onOpen}>
-                        Open
+                        Open Scoreboard
                     </Button>
 
                     <Drawer

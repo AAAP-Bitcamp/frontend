@@ -12,9 +12,16 @@ import {
 import { useState } from "react";
 import Camera from "../components/Camera";
 
-const TakePhoto = ({ setCurrentUser, setUsers, updatePage, flex }) => {
+const TakePhoto = ({
+    setCurrentUser,
+    setUsers,
+    updatePage,
+    flex,
+    setModalText,
+    openModal,
+}) => {
     const sendToWebsocket = () => {};
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState("");
 
     const NameForm = () => {
         const [name, setName] = useState("");
@@ -22,32 +29,32 @@ const TakePhoto = ({ setCurrentUser, setUsers, updatePage, flex }) => {
         const [isLoading, setIsLoading] = useState(false);
 
         const handleSubmit = async () => {
-            try {
-                setIsLoading(true);
-                // Call API to submit the name
-                // Replace API_URL with the actual URL of your API
-                await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ name }),
-                    headers: { "Content-Type": "application/json" },
-                });
-                setIsLoading(false);
-                setSubmitted(true);
-            } catch (error) {
-                console.error("Error submitting name:", error);
-                var currentUser = {
-                    name: name,
-                    isAdmin: false,
-                    photoData: previewUrl,
-                    score: 0,
-                };
-                setCurrentUser(currentUser);
-                // setUsers([currentUser]);
-                setIsLoading(false);
-
-                // Redirect yes
-                updatePage("joinRoom");
+            if (name.length > 15) {
+                setModalText("Your name is too long!");
+                openModal();
+                return;
+            } else if (name.length < 1) {
+                setModalText("Please add a name!");
+                openModal();
+                return;
+            } else if (previewUrl.length < 1) {
+                setModalText("Please take a photo!");
+                openModal();
+                return;
             }
+            // console.error("Error submitting name:", error);
+            var currentUser = {
+                name: name,
+                isAdmin: false,
+                photoData: previewUrl,
+                score: 0,
+            };
+            setCurrentUser(currentUser);
+            // setUsers([currentUser]);
+            setIsLoading(false);
+
+            // Redirect yes
+            updatePage("joinRoom");
         };
 
         return (
@@ -55,18 +62,21 @@ const TakePhoto = ({ setCurrentUser, setUsers, updatePage, flex }) => {
                 {!submitted ? (
                     <form>
                         <FormControl id="name">
-                            <FormLabel htmlFor="name">Name</FormLabel>
                             <Input
                                 type="text"
                                 placeholder="Enter your name"
                                 value={name}
+                                fontSize="3xl"
+                                color="white"
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </FormControl>
                         <Button
                             mt={4}
                             colorScheme="teal"
+                            fontSize="3xl"
                             onClick={handleSubmit}
+                            padding={5}
                             disabled={isLoading || name === ""}
                         >
                             {isLoading ? (
@@ -91,7 +101,18 @@ const TakePhoto = ({ setCurrentUser, setUsers, updatePage, flex }) => {
 
     return (
         <Flex align="center" justify="center" direction="column">
-            <Camera setPreviewUrl={setPreviewUrl} />
+            <Text fontSize="5xl" mb={100} align="center">
+                Welcome to PhotoAssassin
+            </Text>
+            <></>
+            <Text fontSize="3xl" mb={5} align="center">
+                Click the camera to upload your photo
+            </Text>
+            <Camera
+                imgSize={100}
+                previewUrl={previewUrl}
+                setPreviewUrl={setPreviewUrl}
+            />
             <NameForm></NameForm>
         </Flex>
     );

@@ -1,5 +1,13 @@
 import React from "react";
-import { Button, Input, Text, Flex, Box } from "@chakra-ui/react";
+import {
+    Button,
+    Card,
+    CardBody,
+    Input,
+    Text,
+    Flex,
+    Box,
+} from "@chakra-ui/react";
 import { useState } from "react";
 
 const Lobby = ({ currentUser, users, updatePage }) => {
@@ -8,12 +16,36 @@ const Lobby = ({ currentUser, users, updatePage }) => {
     const sendToWebsocket = () => {};
 
     const startGame = () => {
-        // TESTING ONLY PLEASE SET BACK TO "game"
-        updatePage("end");
+        updatePage("game");
     };
 
     const handleChange = (event) => {
         setJoinCode(event.target.value);
+    };
+
+    const UserCard = (props) => {
+        return (
+            <Card mb={5} style={{ width: "100%" }}>
+                <CardBody padding={1}>
+                    <Flex justify="space-between" style={{ width: "100%" }}>
+                        <div>
+                            <Text fontSize="3xl" color="black">
+                                {props.userData["name"]}
+                            </Text>
+
+                            <Text fontSize="2xl" color="black">
+                                {props.userData["isAdmin"] && "Admin"}
+                            </Text>
+                        </div>
+
+                        <img
+                            style={{ width: 100, height: 100 }}
+                            src={props.userData["photoData"]}
+                        ></img>
+                    </Flex>
+                </CardBody>
+            </Card>
+        );
     };
 
     console.log("THESE ARE");
@@ -21,25 +53,18 @@ const Lobby = ({ currentUser, users, updatePage }) => {
 
     return (
         <Flex align="center" justify="center" direction="column">
-            <Text fontSize="3xl" mb={5}>
-                PhotoAssassins - CODE_HERE
+            <Text fontSize="3xl" align="center" mb={5}>
+                Room code: CODE_HERE
             </Text>
 
             {users.map((userData) => {
-                return (
-                    <Flex>
-                        <Text fontSize="3xl" mb={5}>
-                            {userData["name"]} {userData["isAdmin"] && "ADMIN"}
-                        </Text>
-                        <img
-                            style={{ height: 200 }}
-                            src={userData["photoData"]}
-                        ></img>
-                    </Flex>
-                );
+                return <UserCard userData={userData} />;
             })}
+
             {currentUser["isAdmin"] && (
-                <Button onClick={startGame}>Start Game</Button>
+                <Button fontSize="4xl" colorScheme="teal" onClick={startGame}>
+                    Start Game
+                </Button>
             )}
         </Flex>
     );

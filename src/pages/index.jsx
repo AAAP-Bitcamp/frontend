@@ -1,14 +1,17 @@
 import Image from "next/image";
-import { Button, Input, Text, Flex } from "@chakra-ui/react";
+import { Button, Input, Text, Flex, useDisclosure } from "@chakra-ui/react";
 import { SetStateAction, useState, useEffect } from "react";
 import JoinRoom from "./JoinRoom";
 import TakePhoto from "./TakePhoto";
 import Lobby from "./Lobby";
 import Game from "./Game";
 import End from "./End";
+import OurModal from "../components/OurModal";
 
 export default function Home() {
     const [currPage, setCurrPage] = useState("takePhoto");
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [modalText, setModalText] = useState("");
     var sampleUser = {
         name: "jUnion44",
         isAdmin: true,
@@ -64,58 +67,70 @@ export default function Home() {
     //     return <TakePhoto></TakePhoto>;
     // }
     return (
-        <Flex align="center" justify="center" height="100vh">
-            {currPage == "joinRoom" && (
-                <JoinRoom
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    setUsers={setUsers}
-                    updatePage={setCurrPage}
-                    flex="center"
-                />
-            )}
-            {currPage == "takePhoto" && (
-                <TakePhoto
-                    setCurrentUser={setCurrentUser}
-                    setUsers={setUsers}
-                    updatePage={setCurrPage}
-                    flex="center"
-                />
-            )}
-            {currPage == "lobby" && (
-                <Lobby
-                    currentUser={currentUser}
-                    users={users}
-                    updatePage={setCurrPage}
-                    flex="center"
-                />
-            )}
-            {currPage == "game" && (
-                <Game
-                    users={users}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    setUsers={setUsers}
-                    updatePage={setCurrPage}
-                    flex="center"
-                    userImgs={userImgs}
-                    setUserImgs={setUserImgs}
-                    addPoints={addPoints}
-                />
-            )}
-            {currPage == "end" && (
-                <End
-                    users={users}
-                    currentUser={currentUser}
-                    setCurrentUser={setCurrentUser}
-                    setUsers={setUsers}
-                    updatePage={setCurrPage}
-                    flex="center"
-                    userImgs={userImgs}
-                    setUserImgs={setUserImgs}
-                    addPoints={addPoints}
-                />
-            )}
-        </Flex>
+        <>
+            <OurModal
+                isOpen={isOpen}
+                onOpen={onOpen}
+                onClose={onClose}
+                modalText={modalText}
+            />
+            <Flex align="center" justify="center" height="100vh">
+                {currPage == "joinRoom" && (
+                    <JoinRoom
+                        currentUser={currentUser}
+                        setCurrentUser={setCurrentUser}
+                        setUsers={setUsers}
+                        updatePage={setCurrPage}
+                        flex="center"
+                    />
+                )}
+                {currPage == "takePhoto" && (
+                    <TakePhoto
+                        setCurrentUser={setCurrentUser}
+                        setUsers={setUsers}
+                        updatePage={setCurrPage}
+                        flex="center"
+                        setModalText={setModalText}
+                        openModal={onOpen}
+                    />
+                )}
+                {currPage == "lobby" && (
+                    <Lobby
+                        currentUser={currentUser}
+                        users={users}
+                        updatePage={setCurrPage}
+                        flex="center"
+                    />
+                )}
+                {currPage == "game" && (
+                    <Game
+                        users={users}
+                        currentUser={currentUser}
+                        setCurrentUser={setCurrentUser}
+                        setUsers={setUsers}
+                        updatePage={setCurrPage}
+                        flex="center"
+                        userImgs={userImgs}
+                        setUserImgs={setUserImgs}
+                        addPoints={addPoints}
+                        setModalText={setModalText}
+                        openModal={onOpen}
+                    />
+                )}
+                {currPage == "end" && (
+                    <End
+                        users={users}
+                        currentUser={currentUser}
+                        setCurrentUser={setCurrentUser}
+                        setUsers={setUsers}
+                        updatePage={setCurrPage}
+                        flex="center"
+                        userImgs={userImgs}
+                        setUserImgs={setUserImgs}
+                        addPoints={addPoints}
+                    />
+                )}
+            </Flex>
+        </>
     );
 }
