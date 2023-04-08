@@ -2,10 +2,30 @@ import React from "react";
 import { Button, Input, Text, Flex } from "@chakra-ui/react";
 import { useState } from "react";
 
-const JoinRoom = (props) => {
+const JoinRoom = ({ currentUser, setCurrentUser, setUsers, updatePage }) => {
     const [joinCode, setJoinCode] = useState("");
 
-    const sendToWebsocket = () => {};
+    const createRoom = () => {
+        var newUser = {};
+        newUser["name"] = currentUser["name"];
+        newUser["isAdmin"] = true;
+        newUser["score"] = 0;
+        newUser["photoData"] = currentUser["photoData"];
+        setCurrentUser(newUser);
+        setUsers([newUser]);
+        updatePage("lobby");
+    };
+
+    const sendToWebsocket = () => {
+        var newUser = {};
+        newUser["name"] = currentUser["name"];
+        newUser["isAdmin"] = false;
+        newUser["score"] = 0;
+        newUser["photoData"] = currentUser["photoData"];
+        setCurrentUser(newUser);
+        setUsers([newUser]);
+        updatePage("lobby");
+    };
 
     const handleChange = (event) => {
         setJoinCode(event.target.value);
@@ -16,7 +36,9 @@ const JoinRoom = (props) => {
             <Text fontSize="3xl" mb={5}>
                 PhotoAssassins
             </Text>
-            <Button mb={5}>Create Room</Button>
+            <Button mb={5} onClick={createRoom}>
+                Create Room
+            </Button>
             <Text fontSize="3xl" mt={5} mb={5}>
                 Join Room
             </Text>
@@ -28,8 +50,8 @@ const JoinRoom = (props) => {
                     color="white"
                     onChange={handleChange}
                 ></Input>
+                <Button type="submit">Enter</Button>
             </form>
-            <Button type="submit">Enter</Button>
         </Flex>
     );
 };
