@@ -52,7 +52,12 @@ const Lobby = ({ currentUser, users, updatePage }) => {
     console.log(users);
 
     return (
-        <Flex align="center" justify="center" direction="column">
+        <Flex
+            width={window.innerWidth - 50}
+            align="center"
+            justify="center"
+            direction="column"
+        >
             <Text fontSize="3xl" align="center" mb={5}>
                 Room code: CODE_HERE
             </Text>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import Camera from "@/components/Camera";
 import {
@@ -20,10 +20,44 @@ import {
     FormLabel,
     useDisclosure,
     Spinner,
+    useTimeout,
 } from "@chakra-ui/react";
 
 function PlacementExample() {
     return <></>;
+}
+
+function Timer() {
+    const timeLeftRef = useRef(59.5);
+    const [timerState, setTimerState] = useState(1);
+    const [timerStarted, setTimerStarted] = useState(false);
+
+    if (timerStarted) {
+        console.log("eh");
+        return;
+    }
+    setTimerStarted(true);
+
+    setTimeout(
+        () => {
+            setTimerState(1 - timerState);
+            if (timerState == 1) {
+                timeLeftRef.current -= 0.5;
+            }
+
+            console.log(timeLeftRef.current);
+        },
+        500,
+        timeLeftRef.current > 0
+    );
+
+    return (
+        <Text fontSize="xl" id="epictext">
+            {timeLeftRef.current > 0
+                ? `${timeLeftRef.current} seconds left`
+                : "Time's up!"}
+        </Text>
+    );
 }
 
 const ScoreCard = ({ photoSrc, score }) => {
@@ -70,7 +104,7 @@ const Game = ({
             return;
         }
         var newImgs = [...userImgs];
-        newImgs = newImgs.concat([previewUrl]);
+        newImgs = [previewUrl].concat(newImgs);
         addPoints(currentUser["name"]);
         setUserImgs(newImgs);
         console.log(newImgs);
@@ -81,6 +115,9 @@ const Game = ({
             <Flex>
                 <PlacementExample />
                 <Flex overflowX="auto" direction="column">
+                    <Text align="center" fontSize="4xl" mb={50}>
+                        Game In Progress
+                    </Text>
                     <Camera
                         imgSize={200}
                         previewUrl={previewUrl}
@@ -95,7 +132,7 @@ const Game = ({
                     >
                         Assassinate!
                     </Button>
-                    <Button colorScheme="blue" onClick={onOpen}>
+                    <Button colorScheme="blue" onClick={onOpen} mb={5}>
                         Open Scoreboard
                     </Button>
 
@@ -107,7 +144,7 @@ const Game = ({
                         <DrawerOverlay />
                         <DrawerContent>
                             <DrawerHeader borderBottomWidth="1px">
-                                Basic Drawer
+                                Scoreboard
                             </DrawerHeader>
                             <DrawerBody>
                                 {users.map((userData) => {
@@ -121,14 +158,33 @@ const Game = ({
                             </DrawerBody>
                         </DrawerContent>
                     </Drawer>
+                    <Text fontSize="2xl" align="center" mb={2}>
+                        My Targets
+                    </Text>
+                    <Flex width="100%" justifyContent="center">
+                        <Box
+                            maxWidth={window.innerWidth - 110}
+                            overflowX="scroll"
+                        >
+                            <Flex>
+                                {userImgs.map((userData) => {
+                                    return (
+                                        <Image
+                                            boxSize="200px"
+                                            mr={5}
+                                            borderRadius="full"
+                                            src={userData}
+                                            minWidth="200px"
+                                        ></Image>
+                                    );
+                                })}
+                            </Flex>
+                        </Box>
+                    </Flex>
+                    <Timer></Timer>
                 </Flex>
             </Flex>
             {/* <Divider /> */}
-            <Flex overflowX="auto">
-                {userImgs.map((userData) => {
-                    return <img style={{ height: 200 }} src={userData}></img>;
-                })}
-            </Flex>
         </Flex>
     );
 };
