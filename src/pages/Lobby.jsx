@@ -10,18 +10,40 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 
-const Lobby = ({ currentUser, users, updatePage }) => {
-    const [joinCode, setJoinCode] = useState("");
-
+const Lobby = ({ currentUser, users, updatePage, joinCode }) => {
     const sendToWebsocket = () => {};
 
     const startGame = () => {
+        socket.emit("start", data);
         updatePage("game");
     };
 
     const handleChange = (event) => {
         setJoinCode(event.target.value);
     };
+
+    socket.on("join", (response) => {
+        var userArray = [];
+        for (var i = 0; i < response.length; i++) {
+            var curr = response[i];
+            var toAdd = {};
+            toAdd["uid"] = response[i]["id"];
+            toAdd["name"] = response[i]["name"];
+            toAdd["photoData"] = response[i]["image"];
+            toAdd["score"] = 0;
+            toAdd["isAdmin"] = false;
+            userArray = userArray.concat([toAdd]);
+        }
+        console.log(response);
+        setJoinCode({
+            code: codeJoin,
+            room_id: "",
+            creator: "",
+        });
+        setUsers(userArray);
+        updatePage("lobby");
+        // Do something with the response
+    });
 
     const UserCard = (props) => {
         return (
@@ -59,18 +81,16 @@ const Lobby = ({ currentUser, users, updatePage }) => {
             direction="column"
         >
             <Text fontSize="3xl" align="center" mb={5}>
-                Room code: CODE_HERE
+                Room code: {joinCode["code"]}
             </Text>
 
             {users.map((userData) => {
                 return <UserCard userData={userData} />;
             })}
 
-            {currentUser["isAdmin"] && (
-                <Button fontSize="4xl" colorScheme="teal" onClick={startGame}>
-                    Start Game
-                </Button>
-            )}
+            <Button fontSize="4xl" colorScheme="teal" onClick={startGame}>
+                Start Game
+            </Button>
         </Flex>
     );
 };

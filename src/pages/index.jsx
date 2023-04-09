@@ -7,12 +7,15 @@ import Lobby from "./Lobby";
 import Game from "./Game";
 import End from "./End";
 import OurModal from "../components/OurModal";
+import AllowLocation from "./AllowLocation";
+import { io } from "socket.io-client";
 
 export default function Home() {
-    const [currPage, setCurrPage] = useState("takePhoto");
+    const [currPage, setCurrPage] = useState("consent");
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [modalText, setModalText] = useState("");
     var sampleUser = {
+        uid: "",
         name: "jUnion44",
         isAdmin: true,
         photoData: "",
@@ -21,6 +24,11 @@ export default function Home() {
     const [currentUser, setCurrentUser] = useState(sampleUser);
     const [users, setUsers] = useState([sampleUser]);
     const [userImgs, setUserImgs] = useState([]);
+    const [joinCode, setJoinCode] = useState({
+        code: "",
+        room_id: "",
+        creator: "",
+    });
 
     useEffect(() => {
         const unloadCallback = (event) => {
@@ -49,13 +57,11 @@ export default function Home() {
 
     // setUsers([sampleUser]);
     const [ws, setWs] = useState();
-    console.log(users);
-    if (currPage == "lobby" && users.length == 0) {
-        console.log("SET");
-        setUsers([sampleUser, sampleUser]);
-    }
-
-    const [joinCode, setJoinCode] = useState("");
+    console.log(currentUser);
+    // if (currPage == "lobby" && users.length == 0) {
+    //     console.log("SET");
+    //     setUsers([sampleUser, sampleUser]);
+    // }
 
     const sendToWebsocket = () => {};
 
@@ -66,6 +72,28 @@ export default function Home() {
     // if (currPage == "takePhoto") {
     //     return <TakePhoto></TakePhoto>;
     // }
+
+    const socket = io("https://aaap-bitcamp.onrender.com");
+    useEffect(() => {
+        // socket.on("join", (message) => {
+        //     console.log(message);
+        // });
+
+        socket.on("connect", () => {
+            console.log("Socket.io connection established.");
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Socket.io connection closed.");
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    // socket.emit("join", "You are a fucking idiot");
+
     return (
         <>
             <OurModal
@@ -82,6 +110,9 @@ export default function Home() {
                         setUsers={setUsers}
                         updatePage={setCurrPage}
                         flex="center"
+                        joinCode={joinCode}
+                        setJoinCode={setJoinCode}
+                        socket={socket}
                     />
                 )}
                 {currPage == "takePhoto" && (
@@ -100,6 +131,7 @@ export default function Home() {
                         users={users}
                         updatePage={setCurrPage}
                         flex="center"
+                        joinCode={joinCode}
                     />
                 )}
                 {currPage == "game" && (
@@ -119,6 +151,19 @@ export default function Home() {
                 )}
                 {currPage == "end" && (
                     <End
+                        users={users}
+                        currentUser={currentUser}
+                        setCurrentUser={setCurrentUser}
+                        setUsers={setUsers}
+                        updatePage={setCurrPage}
+                        flex="center"
+                        userImgs={userImgs}
+                        setUserImgs={setUserImgs}
+                        addPoints={addPoints}
+                    />
+                )}
+                {currPage == "consent" && (
+                    <AllowLocation
                         users={users}
                         currentUser={currentUser}
                         setCurrentUser={setCurrentUser}

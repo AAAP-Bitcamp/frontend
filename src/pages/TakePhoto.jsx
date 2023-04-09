@@ -1,4 +1,6 @@
-import React from "react";
+import { React, useState } from "react";
+import imageCompression from "browser-image-compression";
+
 import {
     Button,
     Input,
@@ -9,7 +11,6 @@ import {
     FormLabel,
     Spinner,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import Camera from "../components/Camera";
 
 const TakePhoto = ({
@@ -43,18 +44,25 @@ const TakePhoto = ({
                 return;
             }
             // console.error("Error submitting name:", error);
-            var currentUser = {
-                name: name,
-                isAdmin: false,
-                photoData: previewUrl,
-                score: 0,
-            };
-            setCurrentUser(currentUser);
-            // setUsers([currentUser]);
-            setIsLoading(false);
 
-            // Redirect yes
-            updatePage("joinRoom");
+            const data = { name: name, image: previewUrl };
+            fetch("https://aaap-bitcamp.onrender.com/api/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            }).then((response) => {
+                response.json().then((data) => {
+                    console.log(data);
+                    var newUser = {};
+                    newUser["uid"] = data["id"];
+                    newUser["name"] = data["name"];
+                    newUser["isAdmin"] = true;
+                    newUser["score"] = 0;
+                    newUser["photoData"] = data["image"];
+                    setCurrentUser(newUser);
+                    updatePage("joinRoom");
+                });
+            });
         };
 
         return (
